@@ -185,8 +185,8 @@ path {
       height = 270 - margin.top - margin.bottom;
 
       // Parse the date / time
-      var parseDate = d3.time.format("%y-%b-%d").parse;
-
+      var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+    
       // Set the ranges
       var x = d3.time.scale().range([0, width]);
       var y = d3.scale.linear().range([height, 0]);
@@ -218,8 +218,7 @@ path {
       getInfo(data).then(([stockInfo]) => {
         Object.keys(stockInfo['Time Series (5min)']).forEach(function(key) {
           arr.push({
-            // Date keys need to be parsed into dates.
-            key: key,
+            key: parseDate(key),
             value: +stockInfo['Time Series (5min)'][key]['4. close']
           });
         
@@ -228,7 +227,7 @@ path {
         document.getElementById('info').innerHTML = value;
         })
       });
-      
+
       console.log(arr);
 
       // Scale the range of the data
