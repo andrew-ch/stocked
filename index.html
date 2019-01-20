@@ -212,33 +212,6 @@ path {
               .attr("transform", 
                     "translate(" + margin.left + "," + margin.top + ")");
 
-      // Get the data
-      var arr = [];
-      var data = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + inputStock.value + '&interval=5min&outputsize=full&apikey=Z1YDC9MX8QAJIIP1';
-      getInfo(data).then(([stockInfo]) => {
-        Object.keys(stockInfo['Time Series (5min)']).forEach(function(key) {
-          arr.push({
-            key: parseDate(key),
-            value: +stockInfo['Time Series (5min)'][key]['4. close']
-          });
-        
-        var value = JSON.stringify(stockInfo["Time Series (5min)"][stockInfo['Meta Data']["3. Last Refreshed"]]["4. close"]);
-        value = +value.substring(1, value.length - 1);
-        document.getElementById('info').innerHTML = value;
-        })
-      });
-
-      console.log(arr);
-
-      // Scale the range of the data
-      x.domain(d3.extent(data, function(d) { return d.date; }));
-      y.domain([0, d3.max(data, function(d) { return d.close; })]);
-
-      // Add the valueline path.
-      svg.append("path")
-          .attr("class", "line")
-          .attr("d", valueline(data));
-
       // Add the X Axis
       svg.append("g")
           .attr("class", "x axis")
@@ -249,8 +222,31 @@ path {
       svg.append("g")
           .attr("class", "y axis")
           .call(yAxis);
-    }
 
+      // Get the data
+      var data = [];
+      var stockData = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + inputStock.value + '&interval=5min&outputsize=full&apikey=Z1YDC9MX8QAJIIP1';
+      getInfo(stockData).then(([stockInfo]) => {
+        Object.keys(stockInfo['Time Series (5min)']).forEach(function(key) {
+          data.push({
+            date: parseDate(key),
+            close: +stockInfo['Time Series (5min)'][key]['4. close']
+          });
+        })
+        var value = JSON.stringify(stockInfo["Time Series (5min)"][stockInfo['Meta Data']["3. Last Refreshed"]]["4. close"]);
+        value = +value.substring(1, value.length - 1);
+        document.getElementById('info').innerHTML = value;
+
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+        // Add the valueline path.
+        svg.append("path")
+          .attr("class", "line")
+          .attr("d", valueline(data));
+        });
+    }
     function getJson(input) {
       return fetch(input)
       .then(response => response.json());
