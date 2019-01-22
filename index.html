@@ -185,7 +185,7 @@ path {
       height = 270 - margin.top - margin.bottom;
 
       // Parse the date / time
-      var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+      var parseDate = d3.time.format("%Y-%m-%d").parse;
     
       // Set the ranges
       var x = d3.time.scale().range([0, width]);
@@ -212,28 +212,20 @@ path {
               .attr("transform", 
                     "translate(" + margin.left + "," + margin.top + ")");
 
-      // Add the X Axis
-      svg.append("g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis);
-
-      // Add the Y Axis
-      svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);
-
       // Get the data
       var data = [];
-      var stockData = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + inputStock.value + '&interval=5min&outputsize=full&apikey=Z1YDC9MX8QAJIIP1';
+      var stockData = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + inputStock.value + '&interval=5min&outputsize=full&apikey=Z1YDC9MX8QAJIIP1';
       getInfo(stockData).then(([stockInfo]) => {
-        Object.keys(stockInfo['Time Series (5min)']).forEach(function(key) {
+        Object.keys(stockInfo['Time Series (Daily)']).forEach(function(key) {
           data.push({
             date: parseDate(key),
-            close: +stockInfo['Time Series (5min)'][key]['4. close']
+            close: +stockInfo['Time Series (Daily)'][key]['4. close']
           });
         })
-        var value = JSON.stringify(stockInfo["Time Series (5min)"][stockInfo['Meta Data']["3. Last Refreshed"]]["4. close"]);
+
+        console.log(data);
+
+        var value = JSON.stringify(stockInfo["Time Series (Daily)"][stockInfo['Meta Data']["3. Last Refreshed"]]["4. close"]);
         value = +value.substring(1, value.length - 1);
         document.getElementById('info').innerHTML = value;
 
@@ -246,7 +238,19 @@ path {
           .attr("class", "line")
           .attr("d", valueline(data));
         });
+        
+        // Add the X Axis
+        svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+        // Add the Y Axis
+        svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
     }
+
     function getJson(input) {
       return fetch(input)
       .then(response => response.json());
