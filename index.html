@@ -222,7 +222,7 @@ path {
             close: +stockInfo['Time Series (Daily)'][key]['4. close']
           });
         }) 
-        
+
         var value = JSON.stringify(stockInfo["Time Series (Daily)"][stockInfo['Meta Data']["3. Last Refreshed"].substring(0, 10)]["4. close"]);
         value = +value.substring(1, value.length - 1);
         document.getElementById('info').innerHTML = value;
@@ -235,7 +235,6 @@ path {
         svg.append("path")
           .attr("class", "line")
           .attr("d", valueline(data));
-        });
         
         // Add the X Axis
         svg.append("g")
@@ -264,6 +263,7 @@ path {
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Price ($)"); 
+        });
     }
 
     function getJson(input) {
