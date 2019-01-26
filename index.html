@@ -224,9 +224,14 @@ path {
           });
         }) 
         
+        // Grabs the most recent price
         var value = JSON.stringify(stockInfo["Time Series (Daily)"][stockInfo['Meta Data']["3. Last Refreshed"].substring(0, 10)]["4. close"]);
         value = +value.substring(1, value.length - 1);
-        document.getElementById('info').innerHTML = value;
+        
+        var recentDate = JSON.stringify(stockInfo['Meta Data']["3. Last Refreshed"]);
+        recentDate = recentDate.substring(1, recentDate.length - 1);
+        var price = "$" + value.toString();
+        document.getElementById('info').innerHTML = inputStock.value.toUpperCase().bold() + "'s stock price as of " + recentDate.bold() + " is " + price.bold();
 
         // Scale the range of the data
         x.domain(d3.extent(data, function(d) { return d.date; }));
