@@ -230,8 +230,13 @@ path {
         
         var recentDate = JSON.stringify(stockInfo['Meta Data']["3. Last Refreshed"]);
         recentDate = recentDate.substring(1, recentDate.length - 1);
+
+        var formatDate = new Date(recentDate.substring(0, 4), recentDate.substring(5, 7), recentDate.substring(8));
+        var options = { year: 'numeric', month: 'long', day: 'numeric' };
+        formatDate = formatDate.toLocaleDateString("en-US", options);
+
         var price = "$" + value.toString();
-        document.getElementById('info').innerHTML = inputStock.value.toUpperCase().bold() + "'s stock price as of " + recentDate.bold() + " is " + price.bold();
+        document.getElementById('info').innerHTML = inputStock.value.toUpperCase().bold() + "'s stock price as of " + formatDate.bold() + " is " + price.bold();
 
         // Scale the range of the data
         x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -261,6 +266,14 @@ path {
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Price ($)"); 
+
+        svg.append("text")
+          .attr("x", (width / 2))             
+          .attr("y", 0 - (margin.top / 2))
+          .attr("text-anchor", "middle")  
+          .style("font-size", "16px") 
+          .style("text-decoration", "underline")  
+          .text(inputStock.value.toUpperCase() + " Stock Price vs Time");
         });
     }
 
