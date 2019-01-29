@@ -114,9 +114,11 @@ path {
             <img class="img-fluid mb-3 mb-lg-0" src="img/bg-masthead.jpg" alt="">
           </div>
           <div class="col-xl-4 col-lg-5">
-            <div class="featured-text text-center text-lg-left">
-              <h4>Shoreline</h4>
-              <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it for any project - even commercial projects! Download it, customize it, and publish your website!</p>
+            <div class="d-flex h-100">
+              <div class="featured-text text-center text-lg-left">
+                <h4>Shoreline</h4>
+                <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it for any project - even commercial projects! Download it, customize it, and publish your website!</p>
+              </div>
             </div>
           </div>
         </div>
@@ -215,6 +217,8 @@ path {
 
       // Get the data
       var data = [];
+      var count = 0;
+      var sum = 0;
       var stockData = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + inputStock.value + '&interval=5min&outputsize=full&apikey=' + mykey;
       getInfo(stockData).then(([stockInfo]) => {
         Object.keys(stockInfo['Time Series (Daily)']).forEach(function(key) {
@@ -222,8 +226,12 @@ path {
             date: parseDate(key),
             close: +stockInfo['Time Series (Daily)'][key]['4. close']
           });
+          count++;
+          sum += +stockInfo['Time Series (Daily)'][key]['4. close']
         }) 
         
+        var mean = (Math.round((sum / count) * 100) / 100);
+
         // Grabs the most recent price
         var value = JSON.stringify(stockInfo["Time Series (Daily)"][stockInfo['Meta Data']["3. Last Refreshed"].substring(0, 10)]["4. close"]);
         value = +value.substring(1, value.length - 1);
@@ -236,7 +244,8 @@ path {
         formatDate = formatDate.toLocaleDateString("en-US", options);
 
         var price = "$" + value.toString();
-        document.getElementById('info').innerHTML = inputStock.value.toUpperCase().bold() + "'s stock price as of " + formatDate.bold() + " is " + price.bold();
+        document.getElementById('info').innerHTML = inputStock.value.toUpperCase().bold() + "'s stock price as of " + formatDate.bold() + " is " + price.bold()
+        + "<br /><br />" + "The " + "arithmetic average is " + "$".bold() + mean.toString().bold();
 
         // Scale the range of the data
         x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -269,7 +278,7 @@ path {
 
         svg.append("text")
           .attr("x", (width / 2))             
-          .attr("y", 0 - (margin.top / 2))
+          .attr("y", 10 - (margin.top / 2))
           .attr("text-anchor", "middle")  
           .style("font-size", "16px") 
           .style("text-decoration", "underline")  
