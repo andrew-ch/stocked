@@ -219,6 +219,11 @@ path {
       var data = [];
       var count = 0;
       var sum = 0;
+
+      var high = -9007199254740992;
+      var low = 9007199254740992;
+      var highDate;
+      var lowDate;
       var stockData = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + inputStock.value + '&interval=5min&outputsize=full&apikey=' + mykey;
       getInfo(stockData).then(([stockInfo]) => {
         Object.keys(stockInfo['Time Series (Daily)']).forEach(function(key) {
@@ -228,24 +233,44 @@ path {
           });
           count++;
           sum += +stockInfo['Time Series (Daily)'][key]['4. close']
+          if (+stockInfo['Time Series (Daily)'][key]['4. close'] >= high) {
+            high = +stockInfo['Time Series (Daily)'][key]['4. close'];
+            highDate = parseDate(key);
+          }
+          if (+stockInfo['Time Series (Daily)'][key]['4. close'] <= low) {
+            low = +stockInfo['Time Series (Daily)'][key]['4. close'];
+            lowDate = parseDate(key);
+          }
         }) 
         
-        var mean = (Math.round((sum / count) * 100) / 100);
+        var mean = parseFloat(Math.round((sum / count) * 100) / 100).toFixed(2);
+        high = parseFloat(Math.round(high * 100) / 100).toFixed(2);
+        low = parseFloat(Math.round(low * 100) / 100).toFixed(2);
 
         // Grabs the most recent price
         var value = JSON.stringify(stockInfo["Time Series (Daily)"][stockInfo['Meta Data']["3. Last Refreshed"].substring(0, 10)]["4. close"]);
-        value = +value.substring(1, value.length - 1);
+        value = parseFloat(+value.substring(1, value.length - 1)).toFixed(2);
         
         var recentDate = JSON.stringify(stockInfo['Meta Data']["3. Last Refreshed"]);
         recentDate = recentDate.substring(1, recentDate.length - 1);
 
-        var formatDate = new Date(recentDate.substring(0, 4), recentDate.substring(5, 7), recentDate.substring(8));
+        var formatDate = new Date(recentDate.substring(0, 4), +recentDate.substring(5, 7) - 1, recentDate.substring(8, 10));
         var options = { year: 'numeric', month: 'long', day: 'numeric' };
         formatDate = formatDate.toLocaleDateString("en-US", options);
+        
+        highDate = JSON.stringify(highDate);
+        var maxDate = new Date(highDate.substring(1, 5), highDate.substring(6, 8), highDate.substring(9, 11));
+        maxDate = maxDate.toLocaleDateString("en-US", options);
+
+        lowDate = JSON.stringify(lowDate);
+        var minDate = new Date(lowDate.substring(1, 5), lowDate.substring(6, 8), lowDate.substring(9, 11));
+        minDate = minDate.toLocaleDateString("en-US", options);
 
         var price = "$" + value.toString();
         document.getElementById('info').innerHTML = inputStock.value.toUpperCase().bold() + "'s stock price as of " + formatDate.bold() + " is " + price.bold()
-        + "<br /><br />" + "The " + "arithmetic average is " + "$".bold() + mean.toString().bold();
+        + "<br /><br />" + "The " + "arithmetic average is " + "$".bold() + mean.toString().bold()
+        + "<br /><br />" + "The highest price was " + "$".bold() + high.toString().bold() + " on " + maxDate.bold()
+        + "<br /><br />" + "The lowest price was " + "$".bold() + low.toString().bold() + " on " + minDate.bold();
 
         // Scale the range of the data
         x.domain(d3.extent(data, function(d) { return d.date; }));
