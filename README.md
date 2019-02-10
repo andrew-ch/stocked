@@ -1,10 +1,10 @@
-# [Start Bootstrap - Grayscale](https://startbootstrap.com/template-overviews/grayscale/)
+# [Stocked](https://github.com/andrew-ch/stocked)
 
-[Grayscale](http://startbootstrap.com/template-overviews/grayscale/) is a multipurpose, one page HTML theme for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/).
+Stocked is a web application that provides a clean interface for viewing market updates.
 
 ## Preview
 
-[![Grayscale Preview](https://startbootstrap.com/assets/img/templates/grayscale.jpg)](https://blackrockdigital.github.io/startbootstrap-grayscale/)
+[Grayscale Preview](https://i.imgur.com/VB8FmJV.png)
 
 **[View Live Preview](https://blackrockdigital.github.io/startbootstrap-grayscale/)**
 
